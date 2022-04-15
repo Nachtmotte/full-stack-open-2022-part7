@@ -1,27 +1,8 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import BlogDetails from "./BlogDetails";
 
-const BlogDetails = ({ blog, visible, likeBlog, removeBlog, own }) => {
-  if (!visible) return null;
-
-  const addedBy = blog.user && blog.user.name ? blog.user.name : "anonymous";
-
-  return (
-    <div>
-      <div>
-        <a href={blog.url}>{blog.url}</a>
-      </div>
-      <div>
-        {blog.likes} likes{" "}
-        <button onClick={() => likeBlog(blog.id)}>like</button>
-      </div>
-      {addedBy}
-      {own && <button onClick={() => removeBlog(blog.id)}>remove</button>}
-    </div>
-  );
-};
-
-const Blog = ({ blog, likeBlog, removeBlog, user }) => {
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
 
   const style = {
@@ -37,13 +18,12 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
       <button onClick={() => setVisible(!visible)}>
         {visible ? "hide" : "view"}
       </button>
-      <BlogDetails
-        blog={blog}
-        visible={visible}
-        likeBlog={likeBlog}
-        removeBlog={removeBlog}
-        own={blog.user && user.username === blog.user.username}
-      />
+      {visible && (
+        <BlogDetails
+          blog={blog}
+          own={blog.user && user.username === blog.user.username}
+        />
+      )}
     </div>
   );
 };
@@ -62,8 +42,6 @@ Blog.propTypes = {
   user: PropTypes.shape({
     username: PropTypes.string.isRequired,
   }),
-  likeBlog: PropTypes.func.isRequired,
-  removeBlog: PropTypes.func.isRequired,
 };
 
 export default Blog;

@@ -1,116 +1,38 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import Blog from "./components/Blog";
+import BlogList from "./components/BlogList";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import userService from "./services/user";
+import { setNotification } from "./redux/actions/notificationAction";
+import { initUser, userLogout } from "./redux/actions/userActions";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState(null);
   const blogFormRef = useRef();
-  const byLikes = (b1, b2) => (b2.likes > b1.likes ? 1 : -1);
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs.sort(byLikes)));
-  }, []);
-
-  useEffect(() => {
-    const userFromStorage = userService.getUser();
-    if (userFromStorage) {
-      setUser(userFromStorage);
-    }
-  }, []);
-
-  const login = async (username, password) => {
-    loginService
-      .login({
-        username,
-        password,
-      })
-      .then((user) => {
-        setUser(user);
-        userService.setUser(user);
-        notify(`${user.name} logged in!`);
-      })
-      .catch(() => {
-        notify("wrong username/password", "alert");
-      });
-  };
+    dispatch(initUser());
+  }, [dispatch]);
 
   const logout = () => {
-    setUser(null);
-    userService.clearUser();
-    notify("good bye!");
+    dispatch(userLogout());
+    dispatch(setNotification("good bye!", "info", 5));
   };
 
-  const createBlog = async (blog) => {
-    blogService
-      .create(blog)
-      .then((createdBlog) => {
-        notify(
-          `a new blog '${createdBlog.title}' by ${createdBlog.author} added`
-        );
-        setBlogs(blogs.concat(createdBlog));
-        blogFormRef.current.toggleVisibility();
-      })
-      .catch((error) => {
-        notify("creating a blog failed: " + error.response.data.error, "alert");
-      });
-  };
-
-  const removeBlog = (id) => {
-    const toRemove = blogs.find((b) => b.id === id);
-
-    const ok = window.confirm(
-      `remove '${toRemove.title}' by ${toRemove.author}?`
-    );
-
-    if (!ok) {
-      return;
-    }
-
-    blogService.remove(id).then(() => {
-      const updatedBlogs = blogs.filter((b) => b.id !== id).sort(byLikes);
-      setBlogs(updatedBlogs);
-    });
-  };
-
-  const likeBlog = async (id) => {
-    const toLike = blogs.find((b) => b.id === id);
-    const liked = {
-      ...toLike,
-      likes: (toLike.likes || 0) + 1,
-      user: toLike.user.id,
-    };
-
-    blogService.update(liked.id, liked).then((updatedBlog) => {
-      notify(`you liked '${updatedBlog.title}' by ${updatedBlog.author}`);
-      const updatedBlogs = blogs
-        .map((b) => (b.id === id ? updatedBlog : b))
-        .sort(byLikes);
-      setBlogs(updatedBlogs);
-    });
-  };
-
-  const notify = (message, type = "info") => {
-    setNotification({ message, type });
-    setTimeout(() => {
-      setNotification(null);
-    }, 5000);
+  const toggleVisibility = () => {
+    blogFormRef.current.toggleVisibility();
   };
 
   if (user === null) {
     return (
       <>
-        <Notification notification={notification} />
-        <LoginForm onLogin={login} />
+        <Notification />
+        <LoginForm />
       </>
     );
   }
@@ -119,7 +41,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
 
-      <Notification notification={notification} />
+      <Notification />
 
       <div>
         {user.name} logged in
@@ -127,20 +49,10 @@ const App = () => {
       </div>
 
       <Togglable buttonLabel="new note" ref={blogFormRef}>
-        <NewBlogForm onCreate={createBlog} />
+        <NewBlogForm toggleVisibility={toggleVisibility} />
       </Togglable>
 
-      <div id="blogs">
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            likeBlog={likeBlog}
-            removeBlog={removeBlog}
-            user={user}
-          />
-        ))}
-      </div>
+      <BlogList user={user} />
     </div>
   );
 };
