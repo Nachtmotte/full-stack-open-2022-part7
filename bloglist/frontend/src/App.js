@@ -1,17 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Routes, Route, useMatch } from "react-router-dom";
 
-import BlogList from "./components/BlogList";
 import LoginForm from "./components/LoginForm";
-import NewBlogForm from "./components/NewBlogForm";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
-import { setNotification } from "./redux/actions/notificationAction";
-import { initUser, userLogout } from "./redux/actions/userActions";
+import UserList from "./components/UserList";
+import Menu from "./components/Menu";
+import Blogs from "./components/Blogs";
+import { initUser } from "./redux/actions/userActions";
+import userService from "./services/user";
+import UserDetails from "./components/UserDetails";
 
 const App = () => {
-  const blogFormRef = useRef();
   const dispatch = useDispatch();
+  const [users, setUsers] = useState([]);
 
   const user = useSelector((state) => state.user);
 
@@ -19,14 +21,14 @@ const App = () => {
     dispatch(initUser());
   }, [dispatch]);
 
-  const logout = () => {
-    dispatch(userLogout());
-    dispatch(setNotification("good bye!", "info", 5));
-  };
+  useEffect(async () => {
+    setUsers(await userService.getAll());
+  }, []);
 
-  const toggleVisibility = () => {
-    blogFormRef.current.toggleVisibility();
-  };
+  const match = useMatch("/users/:id");
+  const userDetails = match
+    ? users.find((u) => u.id === match.params.id)
+    : null;
 
   if (user === null) {
     return (
@@ -39,20 +41,12 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-
-      <Notification />
-
-      <div>
-        {user.name} logged in
-        <button onClick={logout}>logout</button>
-      </div>
-
-      <Togglable buttonLabel="new note" ref={blogFormRef}>
-        <NewBlogForm toggleVisibility={toggleVisibility} />
-      </Togglable>
-
-      <BlogList user={user} />
+      <Menu />
+      <Routes>
+        <Route path="/" element={<Blogs user={user} />} />
+        <Route path="/users" element={<UserList users={users} />} />
+        <Route path="/users/:id" element={<UserDetails user={userDetails} />} />
+      </Routes>
     </div>
   );
 };
