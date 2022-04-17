@@ -30,6 +30,17 @@ export const newBlog = (blog) => {
   };
 };
 
+export const newComment = (comment, blog) => {
+  return async (dispatch) => {
+    const commentCreated = await blogService.addComment(blog.id, {text: comment});
+    blog.comments = blog.comments.concat(commentCreated);
+    dispatch({
+      type: "UPDATE_BLOG",
+      data: blog,
+    });
+  };
+};
+
 export const initializeBlogs = () => {
   return async (dispatch) => {
     const blogs = await blogService.getAll();

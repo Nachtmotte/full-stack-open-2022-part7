@@ -5,7 +5,7 @@ import BlogList from "./BlogList";
 
 import { useRef } from "react";
 
-const Blogs = ({ user }) => {
+const Blogs = () => {
   const blogFormRef = useRef();
 
   const toggleVisibility = () => {
@@ -14,7 +14,7 @@ const Blogs = ({ user }) => {
 
   return (
     <>
-      <h2>blogs</h2>
+      <h2>Blogs</h2>
 
       <Notification />
 
@@ -22,7 +22,7 @@ const Blogs = ({ user }) => {
         <NewBlogForm toggleVisibility={toggleVisibility} />
       </Togglable>
 
-      <BlogList user={user} />
+      <BlogList />
     </>
   );
 };

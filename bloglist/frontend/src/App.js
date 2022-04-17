@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route, useMatch } from "react-router-dom";
 
@@ -7,27 +7,28 @@ import Notification from "./components/Notification";
 import UserList from "./components/UserList";
 import Menu from "./components/Menu";
 import Blogs from "./components/Blogs";
-import { initUser } from "./redux/actions/userActions";
-import userService from "./services/user";
 import UserDetails from "./components/UserDetails";
+import BlogDetails from "./components/BlogDetails";
+import { initUser } from "./redux/actions/userActions";
 
 const App = () => {
   const dispatch = useDispatch();
-  const [users, setUsers] = useState([]);
-
   const user = useSelector((state) => state.user);
+  const users = useSelector((state) => state.users);
+  const blogs = useSelector((state) => state.blogs);
 
   useEffect(() => {
     dispatch(initUser());
   }, [dispatch]);
 
-  useEffect(async () => {
-    setUsers(await userService.getAll());
-  }, []);
+  const matchUser = useMatch("/users/:id");
+  const userDetails = matchUser
+    ? users.find((u) => u.id === matchUser.params.id)
+    : null;
 
-  const match = useMatch("/users/:id");
-  const userDetails = match
-    ? users.find((u) => u.id === match.params.id)
+  const matchBlog = useMatch("/blogs/:id");
+  const blogDetails = matchBlog
+    ? blogs.find((b) => b.id === matchBlog.params.id)
     : null;
 
   if (user === null) {
@@ -43,9 +44,10 @@ const App = () => {
     <div>
       <Menu />
       <Routes>
-        <Route path="/" element={<Blogs user={user} />} />
-        <Route path="/users" element={<UserList users={users} />} />
+        <Route path="/" element={<Blogs />} />
+        <Route path="/users" element={<UserList />} />
         <Route path="/users/:id" element={<UserDetails user={userDetails} />} />
+        <Route path="/blogs/:id" element={<BlogDetails blog={blogDetails} />} />
       </Routes>
     </div>
   );
