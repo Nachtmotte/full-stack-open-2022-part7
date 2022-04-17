@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { userLogout } from "../redux/actions/userActions";
 import { setNotification } from "../redux/actions/notificationAction";
 
+import { Button } from "react-bootstrap";
+
 const Menu = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -25,7 +27,7 @@ const Menu = () => {
         users
       </Link>
       {user.name} logged in
-      <button onClick={logout}>logout</button>
+      <Button variant="dark" onClick={logout} style={{marginLeft: "5px"}}>logout</Button>
     </div>
   );
 };
