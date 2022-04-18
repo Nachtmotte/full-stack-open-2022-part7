@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { setNotification } from "../redux/actions/notificationAction";
 import { newBlog } from "../redux/actions/blogActions";
 
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 
 const NewBlogForm = () => {
@@ -66,7 +66,7 @@ const NewBlogForm = () => {
                 <tr>
                   <td>Title:</td>
                   <td>
-                    <input
+                    <Form.Control
                       value={title}
                       onChange={({ target }) => setTitle(target.value)}
                       id="title"
@@ -77,7 +77,7 @@ const NewBlogForm = () => {
                 <tr>
                   <td>Author:</td>
                   <td>
-                    <input
+                    <Form.Control
                       value={author}
                       onChange={({ target }) => setAuthor(target.value)}
                       id="author"
@@ -88,7 +88,7 @@ const NewBlogForm = () => {
                 <tr>
                   <td>URL:</td>
                   <td>
-                    <input
+                    <Form.Control
                       value={url}
                       onChange={({ target }) => setUrl(target.value)}
                       id="url"

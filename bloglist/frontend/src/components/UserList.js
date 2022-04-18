@@ -15,25 +15,24 @@ const UserList = () => {
   }, [dispatch]);
 
   return (
-    <>
-      <h2>Users</h2>
-      <Table striped>
-        <tbody>
-          <tr>
-            <td></td>
-            <th>blogs created</th>
+    <Table striped bordered style={{ marginTop: "48px" }}>
+      <thead>
+        <tr>
+          <th>Users</th>
+          <th>blogs created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map((user) => (
+          <tr key={user.id}>
+            <th>
+              <Link to={`/users/${user.id}`}>{user.username}</Link>
+            </th>
+            <td>{user.blogs.length}</td>
           </tr>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <th>
-                <Link to={`/users/${user.id}`}>{user.username}</Link>
-              </th>
-              <td>{user.blogs.length}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 

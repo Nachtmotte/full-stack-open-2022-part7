@@ -31,7 +31,7 @@ const BlogList = () => {
         {blogs.map((blog) => (
           <tr key={blog.id}>
             <td>
-              <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+              <Link to={`/blogs/${blog.id}`} style={{textDecoration: "none"}}>{blog.title}</Link>
             </td>
             <td>{blog.user.username}</td>
           </tr>

@@ -1,3 +1,4 @@
+import { Button, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { deleteBlog, updateBlog } from "../redux/actions/blogActions";
@@ -44,15 +45,32 @@ const BlogDetails = ({ blog }) => {
 
   return (
     <div>
-      <h2>{blog.title}</h2>
-      <div>
-        <a href={blog.url}>{blog.url}</a>
-      </div>
-      <div>
-        {blog.likes} likes <button onClick={() => likeBlog(blog)}>like</button>
-      </div>
-      {!own && `added by ${blog.user.name}`}
-      {own && <button onClick={() => removeBlog(blog)}>remove</button>}
+      <Card style={{ width: "fit-content", margin: "10px auto 10px auto" }}>
+        <Card.Body>
+          <Card.Title>{blog.title}</Card.Title>
+          <div>
+            <a href={blog.url}>{blog.url}</a>
+          </div>
+          <div>
+            {blog.likes} likes{" "}
+            <Button variant="success" size="sm" onClick={() => likeBlog(blog)}>
+              like
+            </Button>
+          </div>
+          {!own && `added by ${blog.user.name}`}
+          {own && (
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => removeBlog(blog)}
+              style={{ marginTop: "5px" }}
+            >
+              remove
+            </Button>
+          )}
+        </Card.Body>
+      </Card>
+
       <CommentList blog={blog} />
     </div>
   );

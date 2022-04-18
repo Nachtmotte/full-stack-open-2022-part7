@@ -33,10 +33,10 @@ const App = () => {
 
   if (user === null) {
     return (
-      <>
+      <div className="container">
         <Notification />
         <LoginForm />
-      </>
+      </div>
     );
   }
 
